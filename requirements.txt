@@ -1,5 +1,4 @@
 flask
-lask_cors
+flask_cors
 requests
-shutil
-googlesearch
+googlesearch-python
