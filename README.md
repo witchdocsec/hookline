@@ -10,3 +10,6 @@ it has 4 options:
 3. inject custom html or js from file
 4. browser is not supported download the app (your malware)
 
+#setup
+python3 -m pip install -r requirements.txt
+
