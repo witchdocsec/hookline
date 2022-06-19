@@ -1,0 +1,5 @@
+flask
+lask_cors
+requests
+shutil
+googlesearch
