@@ -4,7 +4,7 @@ from googlesearch import search
 #glone.clone
 def clone(searcht, template):
 	urls=[]
-	for j in search(searcht+" login", tld="com", num=6, stop=6):
+	for j in search(searcht+" login"):
 		print(j)
 		#add google results to array
 		urls.append(j)
