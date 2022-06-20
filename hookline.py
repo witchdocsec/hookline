@@ -177,7 +177,7 @@ def key():
 	with open("keys.txt","a") as keyfile:
 		keyfile.write(keyget)
 	keyfile.close()
-	return key
+	return "return"
 
 #google search start
 @app.route("/")
