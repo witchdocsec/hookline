@@ -96,6 +96,10 @@ def u():
 @app.route("/search")
 def search(maldown=maldown):
     a = request.args.get("q")
+    a=a.replace(" ","~~~")
+    if not a.isalnum():
+    	a = "idiot"
+    a=a.replace("~~~"," ")
     try:
     	#check for relevant templates
         open("templates/"+a+".html","r")
@@ -123,8 +127,6 @@ def tempfunc():
 @app.route("/link")
 def link():
     url = request.args.get("url")
-    if h in url or ipb in url or "127.0.0.1" in url or "localhost" in url or "192.168." in url or "0.0.0.0" in url:
-    	url="https://en.wikipedia.org/wiki/Idiot"
     r = requests.get(url, allow_redirects=False)
 
     #open page in write mode to replace with site clone
