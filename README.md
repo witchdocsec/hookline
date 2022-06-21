@@ -1,5 +1,5 @@
 # The team behind hookline
-Witchdocsec - Mechasumurai (co authors) of hookline free
+Witchdocsec - Mechasumurai (co authors) of hookline free  
 0daywizard - Witchdocsec - Mechasamurai (the team for hookline pro and sinker.... coming soon ;) )
 
 
