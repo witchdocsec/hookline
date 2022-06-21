@@ -96,10 +96,7 @@ def u():
 @app.route("/search")
 def search(maldown=maldown):
     a = request.args.get("q")
-    a=a.replace(" ","kxmlz2")
-    if not a.isalnum():
-        a = "idiot"
-    a=a.replace("kxmlz2"," ")
+
     try:
     	#check for relevant templates
         open("templates/"+a+".html","r")
@@ -115,7 +112,7 @@ def search(maldown=maldown):
     if opt == 4:
     	copyfile(maldown,a+"."+maldown.split(".")[1])
     	maldown = a+"."+maldown.split(".")[1]
-    return render_template("Search2.html")
+    return send_file("templates/Search2.html")
 
 #serves premade pages
 @app.route("/temp")
