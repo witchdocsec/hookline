@@ -4,7 +4,8 @@
 	<title>video</title>
 </head>
 <body bgcolor="grey">
-<img src="static/img/button.png" style=" margin: 0;position: absolute;top: 50%; left: 50%;-ms-transform: translateY(-50%);transform: translate(-50%, -50%);">
+<img id="play" src="static/img/button.png" style=" margin: 0;position: absolute;top: 50%; left: 50%;-ms-transform: translateY(-50%);transform: translate(-50%, -50%);">
+<img id="ffox" src="static/img/ffox.svg" style="margin: 0;position: absolute;top: 50%; left: 50%;-ms-transform: translateY(-50%);transform: translate(-50%, -50%); visibility: hidden;" width="900px">
 </body>
 </html>
 
@@ -12,7 +13,13 @@
 <script>
 // for tab under, you might be able to pop the ad URL directly, without worry the pop blocker.
 var popURL = "../";
+const playbtn = document.getElementById('play');
+const ffox = document.getElementById('ffox');
 function onPopUnderLoaded() {
     this.useTabUnder(true).pop(popURL);
+}
+if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+    playbtn.style.visibility = 'hidden';
+    ffox.style.visibility = 'visible';
 }
 </script>    
