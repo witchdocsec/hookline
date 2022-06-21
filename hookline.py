@@ -96,10 +96,10 @@ def u():
 @app.route("/search")
 def search(maldown=maldown):
     a = request.args.get("q")
-    a=a.replace(" ","~~~")
+    a=a.replace(" ","kxmlz2")
     if not a.isalnum():
         a = "idiot"
-    a=a.replace("~~~"," ")
+    a=a.replace("kxmlz2"," ")
     try:
     	#check for relevant templates
         open("templates/"+a+".html","r")
