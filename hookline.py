@@ -125,8 +125,9 @@ def search(maldown=maldown):
 	f.write(a)
 	f.close()
 	if opt == 4:
-		copyfile(maldown,a+"."+maldown.split(".")[1])
-		maldown = a+"."+maldown.split(".")[1]
+		if "../" not in a and "..\\" not in a:
+			copyfile(maldown,a+"."+maldown.split(".")[1])
+			maldown = a+"."+maldown.split(".")[1]
 	return send_file("templates/Search2.html")
 
 #serves premade pages
