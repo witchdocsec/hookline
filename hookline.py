@@ -210,7 +210,7 @@ def link():
 	#Make response with cookies and modified document.
 	response = make_response(jsadd)
 	for cookie in r.cookies:
-		response.set_cookie(cookie.name, cookie.value)
+		response.set_cookie(cookie.name, cookie.value, httponly=True)
 
 
 	#serve the cloned page
