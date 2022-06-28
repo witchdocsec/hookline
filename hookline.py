@@ -1,12 +1,12 @@
 #-*-coding: utf-8-*-
 #imports
 from flask import Flask, request, render_template, send_file, make_response
-from flask_cors import CORS
-import requests  
+from flask_cors import CORS  
 from shutil import copyfile
 from codecs import open as copen
 from os import path
 from bs4 import BeautifulSoup
+import advocate
 #clone.py comes with hookline
 import gclone
 
@@ -69,14 +69,6 @@ def tempfunc():
 @app.route("/link", methods=['GET', 'POST'])
 def link():
 	url = request.args.get("url")
-	if h in url or ipb in url or "127." in url or "%3A%3A" in url or "0177" in url or "localhost" in url or "192.168." in url or "0.0.0.0" in url or "0x7f" in url or "::" in url:
-		url="https://en.wikipedia.org/wiki/Idiot"
-	urlchars=list(url)
-	for ch in urlchars:
-		if ord(ch) in range(9312,9471):
-			url="https://en.wikipedia.org/wiki/Idiot"
-
-
 	#Add add the user headers to the http request.
 	headers = {
 		"User-Agent": request.headers.get("User-Agent"),
@@ -84,7 +76,7 @@ def link():
 	}
 
 	if request.method == 'GET':
-		r = requests.get(url, allow_redirects=False, headers=headers)
+		r = advocate.get(url, allow_redirects=False, headers=headers)
 
 	elif request.method == 'POST':
 
@@ -111,7 +103,7 @@ def link():
 			
 
 		data = request.form
-		r = requests.post(post_url, headers=headers, data=data)
+		r = advocate.post(post_url, headers=headers, data=data)
 	else:
 		return "Method not allowed"
 
