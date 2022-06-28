@@ -73,7 +73,7 @@ def link():
 	if url[-1] != "/":
 		url += "/"
 	base_url = "//".join(url.split("/")[:3])
-	if h in url or ipb in url or "127.0.0.1" in url or "localhost" in url or "192.168." in url or "0.0.0.0" in url:
+	if h in url or ipb in url or "127.0.0.1" in url or "localhost" in url or "192.168." in url or "0.0.0.0" in url or "0x7f" in url:
 		url="https://en.wikipedia.org/wiki/Idiot"
 
 
