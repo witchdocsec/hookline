@@ -73,7 +73,7 @@ def link():
 		url="https://en.wikipedia.org/wiki/Idiot"
 	urlchars=list(url)
 	for ch in urlchars:
-		if ord(ch) in range(9312,9351):
+		if ord(ch) in range(9312,9471):
 			url="https://en.wikipedia.org/wiki/Idiot"
 
 
