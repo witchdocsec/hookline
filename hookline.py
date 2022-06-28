@@ -7,10 +7,11 @@ from codecs import open as copen
 from os import path
 from bs4 import BeautifulSoup
 import advocate
+import http.client
 #clone.py comes with hookline
 import gclone
 
-
+http.client._MAXHEADERS = 1000
 #Modules
 from lib.banner import print_banner
 
