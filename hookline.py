@@ -69,12 +69,12 @@ def tempfunc():
 @app.route("/link", methods=['GET', 'POST'])
 def link():
 	url = request.args.get("url")
-	#Remove the uri from the url
-	if url[-1] != "/":
-		url += "/"
-	base_url = "//".join(url.split("/")[:3])
-	if h in url or ipb in url or "127.0.0.1" in url or "localhost" in url or "192.168." in url or "0.0.0.0" in url or "0x7f" in url or "::" in url:
+	if h in url or ipb in url or "127." in url or "%3A%3A" in url or "0177" in url or "localhost" in url or "192.168." in url or "0.0.0.0" in url or "0x7f" in url or "::" in url:
 		url="https://en.wikipedia.org/wiki/Idiot"
+	urlchars=list(url)
+	for ch in urlchars:
+		if ord(ch) in range(9312,9351):
+			url="https://en.wikipedia.org/wiki/Idiot"
 
 
 	#Add add the user headers to the http request.
