@@ -3,3 +3,4 @@ flask_cors
 requests
 googlesearch-python
 bs4
+advocate
