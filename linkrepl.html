@@ -1,0 +1,13 @@
+<script>
+var url=#url#
+const links = document.getElementsByTagName("a");
+window.addEventListener('load', function () {
+  for (let i = 0; i < links.length; i++) {
+  	if (links[i].toString().startsWith("https://") || links[i].toString().startsWith("http://")){
+  		links[i].href = "http://#h#:#p#/link?url=" + links[i].href;
+  	} else {
+  links[i].href = "http://#h#:#p#/link?url=" + url + links[i].href;
+}
+}
+})
+</script> 
