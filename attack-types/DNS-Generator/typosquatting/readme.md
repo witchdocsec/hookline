@@ -1,0 +1,1 @@
+implement generator for typosquatting
