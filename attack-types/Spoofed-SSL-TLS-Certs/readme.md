@@ -1,1 +1,1 @@
-here we will include methdos for spoofing SSL/CLS 'server' certs 
+here we will include methdos for spoofing SSL/CLS 'server' cert values
