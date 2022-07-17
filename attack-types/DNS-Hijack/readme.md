@@ -1,0 +1,1 @@
+add various DNS hijacks e.g. regular DNS Hijacking, BGP Hijacks, subdomain takeovers, amazon AWS S3 bucket takeovers, etc. We can hijack a subdomain belonging to our target, then use that particular subdomain as part of a spear phishing attack chain.
