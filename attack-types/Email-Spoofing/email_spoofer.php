@@ -1,3 +1,11 @@
+/* NOTE: This source code is fucking ANCIENT, and additionally I never added any vuln protections while I wrote it
+         due to the fact that it was something designed to have been used in private, not something to be given to
+         a user-base of a project. As a result, we will NOT be using this code at all until I have done the two 
+         following things:
+              1) updated the code to patch any vulns that may be present + impelemented input validation / output encoding etc in general
+              2) I will implement bypasses for protections such as SPF and DMARC, allowing us to be able to use this tool in modern environments
+         After these things have been done, I will remove this comment and we can begin using this tool.
+             - MLT.
 <html>
   <head>
 <style type="text/css">
@@ -223,3 +231,6 @@ if($action!=" SPAM ")
 </center>
 </body>
 </html>
+
+SUP HACKERS, DO NOT REMOVE THIS COMMENT UNTIL THE SOURCE IS FIX'D K
+ */
